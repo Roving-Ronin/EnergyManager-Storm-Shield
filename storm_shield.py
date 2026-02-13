@@ -94,6 +94,14 @@ class StormShield(hass.Hass):
         self.target_soc_entity = self.args["target_soc_entity"]
         self.charge_power_entity = self.args["charge_power_entity"]
 
+        # ─── Inverter service (direct call, no HA automations needed) ───
+        self.charge_service = self.args.get(
+            "charge_service", "")
+        self.stop_charge_service = self.args.get(
+            "stop_charge_service", "")
+        self.inverter_device_id = self.args.get(
+            "inverter_device_id", "")
+
         # ─── Storm Shield helper entity IDs ───
         pfx_bool = "input_boolean.storm_shield_"
         pfx_num = "input_number.storm_shield_"
@@ -184,6 +192,10 @@ class StormShield(hass.Hass):
         if self.sensor_grid_voltage:
             self.log(f"  ⚡ Blackout < {self.voltage_blackout}V | "
                      f"Restore > {self.voltage_restore}V")
+        if self.inverter_device_id:
+            self.log(f"  🔌 Inverter:       direct ({self.charge_service})")
+        else:
+            self.log(f"  🔌 Inverter:       via HA automations (no device_id)")
 
     # ═════════════════════════════════════════════════════════════
     # LOGGING
@@ -579,6 +591,7 @@ class StormShield(hass.Hass):
                           entity_id=self.charge_switch)
         self.call_service("input_boolean/turn_on",
                           entity_id=self.h_charging)
+        self._inverter_charge(target, power)
         self._start_monitor()
 
         self._notify(f"🛡️ *STORM SHIELD*\n⚡ Charging STARTED\n"
@@ -588,6 +601,7 @@ class StormShield(hass.Hass):
 
     def _stop_charging(self):
         self._action("🔌 Charging stopped")
+        self._inverter_stop()
         self.call_service("input_boolean/turn_off",
                           entity_id=self.charge_switch)
         self.call_service("input_boolean/turn_off",
@@ -642,6 +656,7 @@ class StormShield(hass.Hass):
             self._action(f"📊 Power: {cur:.0f}→{new}W")
             self.call_service("input_number/set_value",
                               entity_id=self.charge_power_entity, value=new)
+            self._inverter_update_power(new)
 
     # ═════════════════════════════════════════════════════════════
     # NIGHT CHARGING (off-peak tariff)
@@ -723,6 +738,7 @@ class StormShield(hass.Hass):
                           entity_id=self.charge_switch)
         self.call_service("input_boolean/turn_on",
                           entity_id=self.h_f3_charging)
+        self._inverter_charge(target, power)
 
         self._cancel_f3_monitor()
         self.f3_monitor_timer = self.run_every(
@@ -753,6 +769,7 @@ class StormShield(hass.Hass):
             self._action(f"🌙 Power: {cur:.0f}→{new}W")
             self.call_service("input_number/set_value",
                               entity_id=self.charge_power_entity, value=new)
+            self._inverter_update_power(new)
 
     def _f3_stop_cb(self, kwargs):
         if self.get_state(self.h_f3_charging) == "on":
@@ -766,6 +783,7 @@ class StormShield(hass.Hass):
             self._action("🌙 Night charge window ended — was not charging")
 
     def _f3_stop_charging(self):
+        self._inverter_stop()
         self.call_service("input_boolean/turn_off",
                           entity_id=self.charge_switch)
         self.call_service("input_boolean/turn_off",
@@ -901,6 +919,44 @@ class StormShield(hass.Hass):
                               entity_id=self.discharge_entity, value=value)
         except Exception as e:
             self.log(f"⚠️ Set discharge: {e}", level="WARNING")
+
+    def _inverter_charge(self, target_soc, power):
+        """Call inverter service directly for forced charge."""
+        if not self.inverter_device_id or not self.charge_service:
+            return
+        try:
+            self.call_service(self.charge_service,
+                              device_id=self.inverter_device_id,
+                              target_soc=int(target_soc),
+                              power=int(power))
+            self.log(f"  🔌 Inverter: forced charge "
+                     f"SOC={int(target_soc)}% P={int(power)}W")
+        except Exception as e:
+            self.log(f"⚠️ Inverter charge: {e}", level="WARNING")
+
+    def _inverter_update_power(self, power):
+        """Update charge power on the inverter."""
+        if not self.inverter_device_id or not self.charge_service:
+            return
+        try:
+            target = self._num(self.target_soc_entity, 100)
+            self.call_service(self.charge_service,
+                              device_id=self.inverter_device_id,
+                              target_soc=int(target),
+                              power=int(power))
+        except Exception as e:
+            self.log(f"⚠️ Inverter update: {e}", level="WARNING")
+
+    def _inverter_stop(self):
+        """Stop forced charge on the inverter."""
+        if not self.inverter_device_id or not self.stop_charge_service:
+            return
+        try:
+            self.call_service(self.stop_charge_service,
+                              device_id=self.inverter_device_id)
+            self.log("  🔌 Inverter: stop forced charge")
+        except Exception as e:
+            self.log(f"⚠️ Inverter stop: {e}", level="WARNING")
 
     # ═════════════════════════════════════════════════════════════
     # NOTIFICATIONS (unified v2.1)
