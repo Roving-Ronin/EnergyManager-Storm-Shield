@@ -10,7 +10,7 @@ Storm Shield monitors Italian Civil Protection (DPC) weather alerts and automati
 
 ---
 
-Uploading Registrazione 2026-02-13 115925.mp4…
+https://github.com/user-attachments/assets/b0308c6a-4fe3-4a40-8a01-0abf67e5f429
 
 ## Features
 
