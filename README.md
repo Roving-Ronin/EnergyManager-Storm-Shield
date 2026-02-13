@@ -10,6 +10,8 @@ Storm Shield monitors Italian Civil Protection (DPC) weather alerts and automati
 
 ---
 
+Uploading Registrazione 2026-02-13 115925.mp4…
+
 ## Features
 
 - **🛡️ Weather Alert Protection** — Automatically activates on DPC orange/red alerts (level 3-4), limits battery discharge to maintenance level (500W) to preserve charge for emergencies
@@ -63,6 +65,8 @@ Grid voltage > 200V → RESTORED → Back to 500W maintenance
 - **Telegram bot** — for push notifications
 - **Alexa Media Player** — for voice announcements
 - **EV charger switch** — to avoid grid overload during night charging
+
+<img width="1331" height="911" alt="Immagine 2026-02-13 120020" src="https://github.com/user-attachments/assets/b82fe22d-5400-401a-9368-deacce67f1c8" />
 
 ## Installation
 
