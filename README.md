@@ -54,7 +54,7 @@ Grid voltage > 200V → RESTORED → Back to 500W maintenance
 
 - **Home Assistant** 2024.1 or later
 - **AppDaemon** 4.4 or later (installed as HA add-on or standalone)
-- **Huawi Battery Luna2000 + inverter Sun2000** controllable via HA (tested with Huawei SUN2000 + Luna2000) integrate with [Huawei Solar Integration](https://github.com/wlcrs/huawei_solar)
+- **Huawi Battery Luna2000 + inverter Sun2000** controllable via HA (tested with Huawei SUN2000 + Luna2000) integrated by [Huawei Solar Integration](https://github.com/wlcrs/huawei_solar)
 - **DPC Alert sensor** — [DPC Alert custom component](https://github.com/caiosweet/Home-Assistant-custom-components-DPC-Alert) (for Italian weather alerts)
 
 ### Optional
