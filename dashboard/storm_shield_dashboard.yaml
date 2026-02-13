@@ -1,0 +1,1154 @@
+type: sections
+max_columns: 3
+title: Storm Shield
+path: storm-shield
+icon: mdi:shield-alert
+theme: ios-dark-mode-blue-red
+dense_section_placement: true
+sections:
+  - type: grid
+    column_span: 4
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: STORM SHIELD
+            subtitle: ""
+            card_mod:
+              style: >
+                ha-card {
+                  background: linear-gradient(135deg, rgba(15,15,28,0.97) 0%, rgba(22,30,48,0.95) 50%, rgba(15,22,40,0.97) 100%);
+                  border: 1px solid rgba(0,188,212,0.2); border-radius: 24px;
+                  padding: 18px 24px 14px 24px; position: relative; overflow: hidden;
+                }
+
+                ha-card .header, ha-card .container { padding: 0 !important;
+                margin: 0 !important; }
+
+                ha-card .title {
+                  margin: 0 !important; padding: 0 !important; font-size: 28px !important;
+                  font-weight: 700 !important; line-height: 1.1 !important;
+                  display: inline-flex !important; align-items: center !important; gap: 10px !important;
+                  width: max-content;
+                  background: linear-gradient(90deg, #00bcd4, #00e5ff, #00bcd4);
+                  background-size: 200% auto; -webkit-background-clip: text;
+                  -webkit-text-fill-color: transparent; animation: shine 3s linear infinite;
+                }
+
+                ha-card .title::before {
+                  content: "🛡️"; font-size: 26px; line-height: 1;
+                  -webkit-text-fill-color: #00bcd4; background: none !important;
+                  filter: drop-shadow(0 0 5px rgba(0,188,212,0.55));
+                }
+
+                ha-card .subtitle { display: none !important; }
+
+                ha-card::after {
+                  content: ""; display: block; width: 100%; height: 4px; margin-top: 12px;
+                  border-radius: 999px;
+                  background-image:
+                    linear-gradient(90deg, rgba(0,188,212,0.20), rgba(0,229,255,0.20)),
+                    linear-gradient(90deg, transparent 0%, rgba(0,188,212,0.00) 18%, rgba(0,188,212,0.70) 40%,
+                      rgba(0,229,255,0.85) 47%, rgba(255,255,255,1.00) 50%, rgba(0,229,255,0.85) 53%,
+                      rgba(0,188,212,0.70) 60%, rgba(0,188,212,0.00) 82%, transparent 100%),
+                    radial-gradient(circle, rgba(255,255,255,1.00) 0%, rgba(255,255,255,0.55) 35%,
+                      rgba(0,188,212,0.22) 58%, transparent 75%);
+                  background-size: 100% 100%, 200% 100%, 18px 18px; background-repeat: no-repeat;
+                  background-position: 0% 0, 110% 0, -12px 50%;
+                  animation: sweep-main 2.2s ease-in-out infinite alternate;
+                  box-shadow: 0 0 8px rgba(0,188,212,0.35), 0 0 16px rgba(0,229,255,0.22);
+                  pointer-events: none;
+                }
+
+                @keyframes shine { to { background-position: 200% center; } }
+
+                @keyframes sweep-main {
+                  0%   { background-position: 0% 0, 110% 0, -12px 50%; opacity: 0.65; }
+                  50%  { opacity: 1; }
+                  100% { background-position: 0% 0, -10% 0, calc(100% + 12px) 50%; opacity: 0.65; }
+                }
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-template-card
+                primary: >-
+                  {% set s = states('sensor.storm_shield_status') %} {{ s |
+                  replace('🛡️ ', '') | replace('⚡ ', '') | replace('🔒 ', '') |
+                     replace('🧪 ', '') | replace('🌙 ', '') | replace('⏸️ ', '') |
+                     replace('📡 ', '') }}
+                secondary: >-
+                  {% set active = is_state('input_boolean.storm_shield_active',
+                  'on') %} {% set f3 =
+                  is_state('input_boolean.storm_shield_f3_charging', 'on') %} {%
+                  set charging = is_state('input_boolean.storm_shield_charging',
+                  'on') %} {% set soc =
+                  states('sensor.battery_state_of_capacity') | float(0) |
+                  round(0) %} {% if charging %}⚡ Carica rete · 🔋 {{ soc }}% {%
+                  elif f3 %}🌙 Carica Notturna · 🔋 {{ soc }}% {% elif active %}🔒
+                  Protezione · 🔋 {{ soc }}% {% else %}🔋 {{ soc }}% · Scarica
+                  libera{% endif %}
+                icon: >-
+                  {% set soc = states('sensor.battery_state_of_capacity') |
+                  float(0) %} {% set charging =
+                  is_state('input_boolean.storm_shield_charging', 'on') or
+                                     is_state('input_boolean.storm_shield_f3_charging', 'on') %}
+                  {% if charging %}
+                    {% if soc >= 80 %}mdi:battery-charging-high
+                    {% elif soc >= 60 %}mdi:battery-charging-medium
+                    {% elif soc >= 40 %}mdi:battery-charging-medium
+                    {% elif soc >= 20 %}mdi:battery-charging-low
+                    {% else %}mdi:battery-charging-outline
+                    {% endif %}
+                  {% else %}
+                    {% if soc >= 90 %}mdi:battery
+                    {% elif soc >= 80 %}mdi:battery-90
+                    {% elif soc >= 70 %}mdi:battery-80
+                    {% elif soc >= 60 %}mdi:battery-70
+                    {% elif soc >= 50 %}mdi:battery-60
+                    {% elif soc >= 40 %}mdi:battery-50
+                    {% elif soc >= 30 %}mdi:battery-40
+                    {% elif soc >= 20 %}mdi:battery-30
+                    {% elif soc >= 10 %}mdi:battery-20
+                    {% else %}mdi:battery-10
+                    {% endif %}
+                  {% endif %}
+                color: >-
+                  {% set soc = states('sensor.battery_state_of_capacity') |
+                  float(0) %} {% if soc >= 70 %}green {% elif soc >= 40 %}amber
+                  {% elif soc >= 20 %}deep-orange {% else %}red {% endif %}
+                vertical: true
+                features_position: bottom
+                card_mod:
+                  style: |
+                    ha-card {
+                      {% set active = is_state('input_boolean.storm_shield_active', 'on') %}
+                      {% set f3 = is_state('input_boolean.storm_shield_f3_charging', 'on') %}
+                      {% set charging = is_state('input_boolean.storm_shield_charging', 'on') %}
+                      {% set test = is_state('input_boolean.storm_shield_test_mode', 'on') %}
+                      {% set level = states('sensor.storm_shield_alert_level') | int(0) %}
+
+                      {% if test %}
+                        --pulse-color: 233,30,99;
+                        border: 2px solid rgba(233,30,99,0.7);
+                        animation: pulse-card 1.8s ease-in-out infinite;
+                      {% elif charging %}
+                        --pulse-color: 255,179,0;
+                        border: 2px solid rgba(255,179,0,0.8);
+                        animation: pulse-card 1.5s ease-in-out infinite;
+                      {% elif active and level >= 4 %}
+                        --pulse-color: 244,67,54;
+                        border: 2px solid rgba(244,67,54,0.8);
+                        animation: pulse-card 1.2s ease-in-out infinite;
+                      {% elif active and level >= 3 %}
+                        --pulse-color: 255,109,0;
+                        border: 2px solid rgba(255,109,0,0.8);
+                        animation: pulse-card 1.8s ease-in-out infinite;
+                      {% elif f3 %}
+                        --pulse-color: 63,81,181;
+                        border: 2px solid rgba(63,81,181,0.8);
+                        animation: pulse-card 2.5s ease-in-out infinite;
+                      {% elif active %}
+                        --pulse-color: 0,188,212;
+                        border: 2px solid rgba(0,188,212,0.7);
+                        animation: pulse-card 2s ease-in-out infinite;
+                      {% else %}
+                        --pulse-color: 0,200,83;
+                        border: 1px solid rgba(0,200,83,0.35);
+                      {% endif %}
+
+                      /* Sfondo basato su SOC */
+                      {% set soc = states('sensor.battery_state_of_capacity') | float(0) %}
+                      {% if soc >= 70 %}
+                        --soc-color: 0,200,83;
+                      {% elif soc >= 40 %}
+                        --soc-color: 255,179,0;
+                      {% elif soc >= 20 %}
+                        --soc-color: 255,109,0;
+                      {% else %}
+                        --soc-color: 244,67,54;
+                      {% endif %}
+
+                      background: linear-gradient(
+                        145deg,
+                        rgba(var(--pulse-color), 0.12) 0%,
+                        rgba(15,15,28, 0.95) 100%
+                      );
+                      border-radius: 20px;
+                      backdrop-filter: blur(12px);
+                      --icon-size: 48px;
+                      position: relative;
+                      overflow: hidden;
+                    }
+
+                    /* ─── Glow icona colore SOC ─── */
+                    mushroom-shape-icon {
+                      {% set soc = states('sensor.battery_state_of_capacity') | float(0) %}
+                      {% if soc >= 70 %}
+                        filter: drop-shadow(0 0 8px rgba(0,200,83,0.6)) drop-shadow(0 0 20px rgba(0,200,83,0.3));
+                      {% elif soc >= 40 %}
+                        filter: drop-shadow(0 0 8px rgba(255,179,0,0.6)) drop-shadow(0 0 20px rgba(255,179,0,0.3));
+                      {% elif soc >= 20 %}
+                        filter: drop-shadow(0 0 8px rgba(255,109,0,0.6)) drop-shadow(0 0 20px rgba(255,109,0,0.3));
+                      {% else %}
+                        filter: drop-shadow(0 0 10px rgba(244,67,54,0.7)) drop-shadow(0 0 25px rgba(244,67,54,0.4));
+                      {% endif %}
+                    }
+
+                    /* ─── Testo ─── */
+                    .primary {
+                      font-size: 17px !important;
+                      font-weight: 800 !important;
+                      letter-spacing: 0.5px;
+                      text-transform: uppercase;
+                    }
+                    .secondary {
+                      font-size: 11px !important;
+                      font-weight: 500 !important;
+                      opacity: 0.85;
+                      letter-spacing: 0.3px;
+                    }
+
+                    /* ─── Barra stato animata in basso ─── */
+                    ha-card::after {
+                      content: "";
+                      position: absolute;
+                      bottom: 0; left: 0; right: 0;
+                      height: 3px;
+                      border-radius: 0 0 20px 20px;
+                      background: linear-gradient(
+                        90deg,
+                        transparent 0%,
+                        rgba(var(--pulse-color), 0.0) 15%,
+                        rgba(var(--pulse-color), 0.8) 40%,
+                        rgba(var(--pulse-color), 1.0) 50%,
+                        rgba(var(--pulse-color), 0.8) 60%,
+                        rgba(var(--pulse-color), 0.0) 85%,
+                        transparent 100%
+                      );
+                      background-size: 200% 100%;
+                      animation: sweep-bar 2.5s ease-in-out infinite alternate;
+                    }
+
+                    /* ─── Animazioni ─── */
+                    @keyframes pulse-card {
+                      0%, 100% {
+                        box-shadow:
+                          0 0 10px rgba(var(--pulse-color), 0.15),
+                          0 0 30px rgba(var(--pulse-color), 0.08);
+                      }
+                      50% {
+                        box-shadow:
+                          0 0 18px rgba(var(--pulse-color), 0.35),
+                          0 0 45px rgba(var(--pulse-color), 0.15);
+                      }
+                    }
+
+                    @keyframes sweep-bar {
+                      0%   { background-position: 120% 0; }
+                      100% { background-position: -20% 0; }
+                    }
+              - type: custom:mushroom-template-card
+                primary: >-
+                  {{ state_attr('sensor.storm_shield_alert_level', 'alert_text')
+                  }}
+                secondary: >-
+                  {{ state_attr('sensor.storm_shield_alert_level', 'source') |
+                  title }}
+                icon: >-
+                  {% set l = states('sensor.storm_shield_alert_level') | int(0)
+                  %} {% if l >= 4 %}mdi:alert-octagon{% elif l >= 3 %}mdi:alert
+                  {% elif l >= 2 %}mdi:alert-circle{% else %}mdi:check-circle{%
+                  endif %}
+                color: >-
+                  {% set l = states('sensor.storm_shield_alert_level') | int(0)
+                  %} {% if l >= 4 %}red{% elif l >= 3 %}deep-orange{% elif l >=
+                  2 %}amber{% else %}green{% endif %}
+                vertical: true
+                features_position: bottom
+                card_mod:
+                  style: >
+                    ha-card {
+                      {% set l = states('sensor.storm_shield_alert_level') | int(0) %}
+                      {% if l >= 4 %}background: radial-gradient(circle, rgba(244,67,54,0.3) 0%, rgba(244,67,54,0.05) 70%);
+                      border: 2px solid rgba(244,67,54,0.8); animation: pulse-ss 1.5s infinite;
+                      {% elif l >= 3 %}background: radial-gradient(circle, rgba(255,109,0,0.3) 0%, rgba(255,109,0,0.05) 70%);
+                      border: 2px solid rgba(255,109,0,0.8); animation: pulse-ss 2s infinite;
+                      {% else %}background: linear-gradient(145deg, rgba(0,200,100,0.18), rgba(0,100,50,0.12));
+                      border: 1px solid rgba(0,255,136,0.3);{% endif %}
+                      border-radius: 20px; backdrop-filter: blur(10px); --icon-size: 42px;
+                    }
+
+                    .primary { font-size: 16px !important; font-weight: 700
+                    !important; }
+              - type: custom:mushroom-template-card
+                primary: >-
+                  {% if states('sensor.storm_shield_pv_available') == 'sì' %}☀️
+                  Sì{% else %}🌧️ No{% endif %}
+                secondary: >-
+                  {{ state_attr('sensor.storm_shield_pv_available',
+                  'forecast_sun_hours') }}/{{
+                  state_attr('sensor.storm_shield_pv_available',
+                  'forecast_total_hours') }}h sole
+                icon: mdi:solar-power
+                color: >-
+                  {% if states('sensor.storm_shield_pv_available') == 'sì'
+                  %}amber{% else %}grey{% endif %}
+                vertical: true
+                features_position: bottom
+                card_mod:
+                  style: >
+                    ha-card { background: linear-gradient(145deg,
+                    rgba(255,193,7,0.18), rgba(255,152,0,0.12));
+
+                    border: 1px solid rgba(255,193,7,0.3); border-radius: 20px;
+                    --icon-size: 42px; }
+
+                    .primary { font-size: 22px !important; font-weight: 700
+                    !important; }
+              - type: custom:mushroom-template-card
+                primary: >-
+                  {% set v = states('sensor.grid_voltage') | float(0) %}
+                  {% if v < 100 %}⚡ BLACKOUT
+                  {% elif v < 210 %}⚠️ {{ v | round(0) }}V
+                  {% else %}🟢 {{ v | round(0) }}V{% endif %}
+                secondary: >-
+                  {% set v = states('sensor.grid_voltage') | float(0) %}
+                  {% set blackout = is_state('input_boolean.storm_shield_blackout', 'on') %}
+                  {% if blackout %}Casa da batteria
+                  {% elif v < 210 %}Tensione bassa
+                  {% elif v > 253 %}Tensione alta
+                  {% else %}Rete OK{% endif %}
+                icon: >-
+                  {% set v = states('sensor.grid_voltage') | float(0) %}
+                  {% if v < 100 %}mdi:flash-alert
+                  {% elif v < 210 %}mdi:flash-triangle
+                  {% else %}mdi:transmission-tower{% endif %}
+                color: >-
+                  {% set v = states('sensor.grid_voltage') | float(0) %}
+                  {% if v < 100 %}red
+                  {% elif v < 210 %}deep-orange
+                  {% elif v > 253 %}amber
+                  {% else %}green{% endif %}
+                vertical: true
+                features_position: bottom
+                card_mod:
+                  style: >
+                    ha-card {
+                      {% set v = states('sensor.grid_voltage') | float(0) %}
+                      {% set blackout = is_state('input_boolean.storm_shield_blackout', 'on') %}
+                      {% if blackout %}
+                        background: radial-gradient(circle, rgba(244,67,54,0.3) 0%, rgba(244,67,54,0.05) 70%);
+                        border: 2px solid rgba(244,67,54,0.8);
+                        animation: pulse-grid 1.2s infinite;
+                      {% elif v < 210 %}
+                        background: linear-gradient(145deg, rgba(255,109,0,0.18), rgba(255,109,0,0.08));
+                        border: 1px solid rgba(255,109,0,0.4);
+                      {% else %}
+                        background: linear-gradient(145deg, rgba(0,200,83,0.15), rgba(0,200,83,0.05));
+                        border: 1px solid rgba(0,200,83,0.3);
+                      {% endif %}
+                      border-radius: 20px; --icon-size: 42px;
+                    }
+                    .primary { font-size: 16px !important; font-weight: 700 !important; }
+                    @keyframes pulse-grid { 0%,100% { box-shadow: none; } 50% { box-shadow: 0 0 18px rgba(244,67,54,0.5); } }
+        grid_options:
+          columns: full
+        card_mod:
+          style: >-
+            ha-card { background: transparent !important; box-shadow: none
+            !important; }
+  - type: grid
+    column_span: 1
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: CONTROLLI
+            subtitle: ""
+            card_mod:
+              style: >
+                ha-card { background: linear-gradient(135deg,
+                rgba(20,20,35,0.95) 0%, rgba(30,40,60,0.90) 50%,
+                rgba(20,30,50,0.95) 100%); border: 1px solid
+                rgba(0,188,212,0.22); border-radius: 24px; padding: 18px 24px
+                14px 24px; position: relative; overflow: hidden; } ha-card
+                .title { margin: 0 !important; font-size: 20px !important;
+                font-weight: 700 !important; line-height: 1.1; display:
+                inline-flex; align-items: center; gap: 10px; background:
+                linear-gradient(90deg, #00bcd4, #4dd0e1, #00bcd4);
+                background-size: 200% auto; -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent; animation: shine 3s linear
+                infinite; } ha-card .title::before { content: "🎮"; font-size:
+                20px; -webkit-text-fill-color: #00bcd4; background: none
+                !important; } ha-card .subtitle { display: none !important; }
+                ha-card::after { content: ""; display: block; width: 100%;
+                height: 3px; margin-top: 8px; border-radius: 999px;
+                background-image: linear-gradient(90deg, rgba(0,188,212,0.22),
+                rgba(0,229,255,0.22)), linear-gradient(90deg, transparent 0%,
+                rgba(0,188,212,0.00) 12%, rgba(0,188,212,0.85) 28%,
+                rgba(0,229,255,0.95) 45%, rgba(255,255,255,1.00) 50%,
+                rgba(0,229,255,0.95) 55%, rgba(0,188,212,0.85) 72%, transparent
+                100%), radial-gradient(circle, rgba(255,255,255,1.00) 0%,
+                rgba(255,255,255,0.70) 35%, rgba(0,188,212,0.35) 58%,
+                transparent 72%); background-size: 100% 100%, 240% 100%, 22px
+                22px; background-repeat: no-repeat; background-position: 0% 0,
+                120% 0, -14px 50%; animation: sweep-sec 2.7s ease-in-out
+                infinite alternate; box-shadow: 0 0 12px rgba(0,188,212,0.55);
+                pointer-events: none; } @keyframes shine { to {
+                background-position: 200% center; } } @keyframes sweep-sec { 0%
+                { background-position: 0% 0, 120% 0, -14px 50%; opacity: 0.65; }
+                50% { opacity: 1; } 100% { background-position: 0% 0, -20% 0,
+                calc(100% + 14px) 50%; opacity: 0.65; } }
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: input_boolean.storm_shield_manual
+                name: Manuale
+                icon: mdi:shield-lock
+                layout: vertical
+                tap_action:
+                  action: toggle
+                card_mod:
+                  style: >
+                    ha-card { {% if
+                    is_state('input_boolean.storm_shield_manual', 'on')
+                    %}background: rgba(0,188,212,0.15); border: 1px solid
+                    rgba(0,188,212,0.5);{% else %}background:
+                    rgba(50,50,50,0.3); border: 1px solid
+                    rgba(100,100,100,0.3);{% endif %} border-radius: 16px; }
+              - type: custom:mushroom-entity-card
+                entity: input_boolean.storm_shield_bypass
+                name: Bypass
+                icon: mdi:shield-off
+                layout: vertical
+                tap_action:
+                  action: toggle
+                card_mod:
+                  style: >
+                    ha-card { {% if
+                    is_state('input_boolean.storm_shield_bypass', 'on')
+                    %}background: rgba(255,152,0,0.15); border: 1px solid
+                    rgba(255,152,0,0.5);{% else %}background:
+                    rgba(50,50,50,0.3); border: 1px solid
+                    rgba(100,100,100,0.3);{% endif %} border-radius: 16px; }
+              - type: custom:mushroom-entity-card
+                entity: input_boolean.storm_shield_charging
+                name: Carica
+                icon: mdi:battery-charging
+                layout: vertical
+                card_mod:
+                  style: >
+                    ha-card { {% if
+                    is_state('input_boolean.storm_shield_charging', 'on')
+                    %}background: rgba(76,175,80,0.15); border: 1px solid
+                    rgba(76,175,80,0.5); animation: pulse-ch 2s infinite; {%
+                    else %}background: rgba(50,50,50,0.3); border: 1px solid
+                    rgba(100,100,100,0.3);{% endif %} border-radius: 16px; }
+                    @keyframes pulse-ch { 0%,100% { box-shadow: none; } 50% {
+                    box-shadow: 0 0 15px rgba(76,175,80,0.4); } }
+          - type: custom:mushroom-number-card
+            entity: input_number.storm_shield_target_soc
+            name: SOC Target allerta
+            icon: mdi:battery-high
+            layout: horizontal
+            card_mod:
+              style: >-
+                ha-card { background: rgba(76,175,80,0.08); border: 1px solid
+                rgba(76,175,80,0.25); border-radius: 16px; }
+          - type: custom:mushroom-number-card
+            entity: input_number.storm_shield_contract_power
+            name: Pot. contrattuale
+            icon: mdi:flash
+            layout: horizontal
+            card_mod:
+              style: >-
+                ha-card { background: rgba(0,188,212,0.08); border: 1px solid
+                rgba(0,188,212,0.25); border-radius: 16px; }
+          - type: custom:mushroom-number-card
+            entity: input_number.storm_shield_max_charge_power
+            name: Max pot. carica
+            icon: mdi:battery-charging
+            layout: horizontal
+            card_mod:
+              style: >-
+                ha-card { background: rgba(0,188,212,0.08); border: 1px solid
+                rgba(0,188,212,0.25); border-radius: 16px; }
+          - type: custom:mushroom-number-card
+            entity: input_number.storm_shield_safety_margin
+            name: Margine sicurezza
+            icon: mdi:shield-half-full
+            layout: horizontal
+            card_mod:
+              style: >-
+                ha-card { background: rgba(0,188,212,0.08); border: 1px solid
+                rgba(0,188,212,0.25); border-radius: 16px; }
+          - type: custom:mushroom-number-card
+            entity: input_number.storm_shield_discharge_restore
+            name: Scarica ripristino
+            icon: mdi:battery-arrow-down
+            layout: horizontal
+            card_mod:
+              style: >-
+                ha-card { background: rgba(0,188,212,0.08); border: 1px solid
+                rgba(0,188,212,0.25); border-radius: 16px; }
+          - type: custom:mushroom-template-card
+            primary: >-
+              ⚡ {{ states('sensor.storm_shield_charge_power') | float(0) |
+              round(0) }}W disponibili
+            secondary: >-
+              Rete: {{ states('sensor.power_grid_kwp') | float(0) | round(0) }}W
+              / {{ states('input_number.storm_shield_contract_power') |
+              float(4500) | round(0) }}W
+            icon: mdi:flash
+            icon_color: cyan
+            card_mod:
+              style: >-
+                ha-card { background: rgba(0,150,136,0.10); border: 1px solid
+                rgba(0,150,136,0.3); border-radius: 16px; }
+        card_mod:
+          style: >
+            ha-card { background: linear-gradient(160deg, rgba(0,188,212,0.08)
+            0%, rgba(20,30,50,0.95) 100%);
+
+            border: 1px solid rgba(0,188,212,0.25); border-radius: 24px;
+            padding: 16px; backdrop-filter: blur(10px); }
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: LOG & TEST
+            subtitle: ""
+            card_mod:
+              style: >
+                ha-card { background: linear-gradient(135deg,
+                rgba(20,20,35,0.95) 0%, rgba(30,40,60,0.90) 50%,
+                rgba(20,30,50,0.95) 100%); border: 1px solid
+                rgba(233,30,99,0.22); border-radius: 24px; padding: 18px 24px
+                14px 24px; position: relative; overflow: hidden; } ha-card
+                .title { margin: 0 !important; font-size: 20px !important;
+                font-weight: 700 !important; line-height: 1.1; display:
+                inline-flex; align-items: center; gap: 10px; background:
+                linear-gradient(90deg, #e91e63, #f48fb1, #e91e63);
+                background-size: 200% auto; -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent; animation: shine 3s linear
+                infinite; } ha-card .title::before { content: "📋"; font-size:
+                20px; -webkit-text-fill-color: #f48fb1; background: none
+                !important; } ha-card .subtitle { display: none !important; }
+                ha-card::after { content: ""; display: block; width: 100%;
+                height: 3px; margin-top: 8px; border-radius: 999px;
+                background-image: linear-gradient(90deg, rgba(233,30,99,0.22),
+                rgba(244,143,177,0.22)), linear-gradient(90deg, transparent 0%,
+                rgba(233,30,99,0.00) 12%, rgba(233,30,99,0.85) 28%,
+                rgba(244,143,177,0.95) 45%, rgba(255,255,255,1.00) 50%,
+                rgba(244,143,177,0.95) 55%, rgba(233,30,99,0.85) 72%,
+                transparent 100%), radial-gradient(circle,
+                rgba(255,255,255,1.00) 0%, rgba(255,255,255,0.70) 35%,
+                rgba(233,30,99,0.35) 58%, transparent 72%); background-size:
+                100% 100%, 240% 100%, 22px 22px; background-repeat: no-repeat;
+                background-position: 0% 0, 120% 0, -14px 50%; animation:
+                sweep-test 2.7s ease-in-out infinite alternate; box-shadow: 0 0
+                12px rgba(233,30,99,0.55); pointer-events: none; } @keyframes
+                shine { to { background-position: 200% center; } } @keyframes
+                sweep-test { 0% { background-position: 0% 0, 120% 0, -14px 50%;
+                opacity: 0.65; } 50% { opacity: 1; } 100% { background-position:
+                0% 0, -20% 0, calc(100% + 14px) 50%; opacity: 0.65; } }
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: input_boolean.storm_shield_test_mode
+                name: Test Mode
+                icon: mdi:test-tube
+                layout: vertical
+                tap_action:
+                  action: toggle
+                card_mod:
+                  style: >
+                    ha-card { {% if
+                    is_state('input_boolean.storm_shield_test_mode', 'on')
+                    %}background: rgba(233,30,99,0.15); border: 1px solid
+                    rgba(233,30,99,0.5); animation: pulse-test 1.5s infinite; {%
+                    else %}background: rgba(50,50,50,0.3); border: 1px solid
+                    rgba(100,100,100,0.3);{% endif %} border-radius: 16px; }
+                    @keyframes pulse-test { 0%,100% { box-shadow: none; } 50% {
+                    box-shadow: 0 0 15px rgba(233,30,99,0.4); } }
+              - type: custom:mushroom-number-card
+                entity: input_number.storm_shield_test_level
+                name: Livello simulato
+                icon: mdi:alert
+                layout: horizontal
+                fill_container: true
+                card_mod:
+                  style: >-
+                    ha-card { background: rgba(233,30,99,0.08); border: 1px
+                    solid rgba(233,30,99,0.25); border-radius: 16px; }
+          - type: custom:mushroom-template-card
+            primary: "{{ states('input_text.storm_shield_last_action') }}"
+            secondary: Ultima azione
+            icon: mdi:clipboard-text-clock
+            icon_color: pink
+            card_mod:
+              style: >-
+                ha-card { background: rgba(233,30,99,0.06); border: 1px solid
+                rgba(233,30,99,0.2); border-radius: 16px; }
+          - type: markdown
+            content: >-
+              {% set entries = state_attr('sensor.storm_shield_log', 'entries')
+              %} {% if entries and entries | length > 0 %} {% for e in entries |
+              reverse %} {{ e }}
+
+              {% endfor %} {% else %} _Nessun log disponibile_ {% endif %}
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+                  border-radius: 16px; font-size: 11px; line-height: 1.6;
+                  max-height: 300px; overflow-y: auto;
+                }
+                ha-card p { margin: 0 !important; }
+          - type: logbook
+            title: ""
+            entities:
+              - input_boolean.storm_shield_active
+              - input_boolean.storm_shield_charging
+              - input_boolean.storm_shield_f3_charging
+              - input_boolean.storm_shield_manual
+              - input_boolean.storm_shield_blackout
+            hours_to_show: 24
+            card_mod:
+              style: >-
+                ha-card { background: rgba(0,0,0,0.3); border: 1px solid
+                rgba(255,255,255,0.1); border-radius: 16px; max-height: 200px;
+                overflow-y: auto; }
+        grid_options:
+          columns: full
+        card_mod:
+          style: >
+            ha-card { background: linear-gradient(160deg, rgba(233,30,99,0.06)
+            0%, rgba(20,30,50,0.95) 100%);
+
+            border: 1px solid rgba(233,30,99,0.2); border-radius: 24px; padding:
+            16px; backdrop-filter: blur(10px); }
+  - type: grid
+    column_span: 1
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: NOTIFICHE
+            subtitle: ""
+            card_mod:
+              style: >
+                ha-card { background: linear-gradient(135deg,
+                rgba(20,20,35,0.95) 0%, rgba(30,40,60,0.90) 50%,
+                rgba(20,30,50,0.95) 100%); border: 1px solid
+                rgba(126,87,194,0.22); border-radius: 24px; padding: 18px 24px
+                14px 24px; position: relative; overflow: hidden; } ha-card
+                .title { margin: 0 !important; font-size: 20px !important;
+                font-weight: 700 !important; line-height: 1.1; display:
+                inline-flex; align-items: center; gap: 10px; background:
+                linear-gradient(90deg, #7e57c2, #b39ddb, #7e57c2);
+                background-size: 200% auto; -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent; animation: shine 3s linear
+                infinite; } ha-card .title::before { content: "🔔"; font-size:
+                20px; -webkit-text-fill-color: #b39ddb; background: none
+                !important; } ha-card .subtitle { display: none !important; }
+                ha-card::after { content: ""; display: block; width: 100%;
+                height: 3px; margin-top: 8px; border-radius: 999px;
+                background-image: linear-gradient(90deg, rgba(126,87,194,0.22),
+                rgba(179,157,219,0.22)), linear-gradient(90deg, transparent 0%,
+                rgba(126,87,194,0.00) 12%, rgba(126,87,194,0.85) 28%,
+                rgba(179,157,219,0.95) 45%, rgba(255,255,255,1.00) 50%,
+                rgba(179,157,219,0.95) 55%, rgba(126,87,194,0.85) 72%,
+                transparent 100%), radial-gradient(circle,
+                rgba(255,255,255,1.00) 0%, rgba(255,255,255,0.70) 35%,
+                rgba(126,87,194,0.35) 58%, transparent 72%); background-size:
+                100% 100%, 240% 100%, 22px 22px; background-repeat: no-repeat;
+                background-position: 0% 0, 120% 0, -14px 50%; animation:
+                sweep-notif 2.7s ease-in-out infinite alternate; box-shadow: 0 0
+                12px rgba(126,87,194,0.55); pointer-events: none; } @keyframes
+                shine { to { background-position: 200% center; } } @keyframes
+                sweep-notif { 0% { background-position: 0% 0, 120% 0, -14px 50%;
+                opacity: 0.65; } 50% { opacity: 1; } 100% { background-position:
+                0% 0, -20% 0, calc(100% + 14px) 50%; opacity: 0.65; } }
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: input_boolean.storm_shield_notify_telegram
+                name: Telegram
+                icon: mdi:send
+                layout: vertical
+                tap_action:
+                  action: toggle
+                card_mod:
+                  style: >
+                    ha-card { {% if
+                    is_state('input_boolean.storm_shield_notify_telegram', 'on')
+                    %}background: rgba(0,136,204,0.15); border: 1px solid
+                    rgba(0,136,204,0.5);{% else %}background:
+                    rgba(50,50,50,0.3); border: 1px solid
+                    rgba(100,100,100,0.3);{% endif %} border-radius: 16px; }
+              - type: custom:mushroom-entity-card
+                entity: input_boolean.storm_shield_notify_alexa
+                name: Alexa
+                icon: mdi:speaker-message
+                layout: vertical
+                tap_action:
+                  action: toggle
+                card_mod:
+                  style: >
+                    ha-card { {% if
+                    is_state('input_boolean.storm_shield_notify_alexa', 'on')
+                    %}background: rgba(0,136,204,0.15); border: 1px solid
+                    rgba(0,136,204,0.5);{% else %}background:
+                    rgba(50,50,50,0.3); border: 1px solid
+                    rgba(100,100,100,0.3);{% endif %} border-radius: 16px; }
+          - type: custom:mushroom-title-card
+            title: NON DISTURBARE
+            subtitle: ""
+            card_mod:
+              style: >
+                ha-card { background: transparent; border: none; padding: 8px 0
+                0 0 !important; } ha-card .title { font-size: 14px !important;
+                font-weight: 700 !important; letter-spacing: 1.5px; background:
+                linear-gradient(90deg, #7e57c2, #b39ddb, #7e57c2);
+                background-size: 200% auto; -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent; animation: shine 3s linear
+                infinite; } ha-card .title::before { content: "🔇"; font-size:
+                16px; -webkit-text-fill-color: #b39ddb; } ha-card .subtitle {
+                display: none !important; } @keyframes shine { to {
+                background-position: 200% center; } }
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: input_datetime.storm_shield_dnd_start
+                name: 🌙 Da
+                icon: ""
+                layout: horizontal
+                fill_container: true
+                card_mod:
+                  style: >
+                    ha-card { background: rgba(126,87,194,0.08); border: 1px
+                    solid rgba(126,87,194,0.25); border-radius: 12px;
+                    --card-primary-font-size: 12px; --card-secondary-font-size:
+                    12px; } mushroom-state-info { flex: 1; } mushroom-shape-icon
+                    { display: none !important; }
+              - type: custom:mushroom-entity-card
+                entity: input_datetime.storm_shield_dnd_end
+                name: ☀️ A
+                icon: ""
+                layout: horizontal
+                fill_container: true
+                card_mod:
+                  style: >
+                    ha-card { background: rgba(126,87,194,0.08); border: 1px
+                    solid rgba(126,87,194,0.25); border-radius: 12px;
+                    --card-primary-font-size: 12px; --card-secondary-font-size:
+                    12px; } mushroom-state-info { flex: 1; } mushroom-shape-icon
+                    { display: none !important; }
+              - type: custom:mushroom-entity-card
+                entity: input_boolean.storm_shield_dnd
+                name: DND
+                icon: mdi:bell-off
+                layout: vertical
+                tap_action:
+                  action: toggle
+                fill_container: false
+                card_mod:
+                  style: >
+                    ha-card { {% if
+                    is_state('input_boolean.storm_shield_dnd', 'on')
+                    %}background: rgba(126,87,194,0.15); border: 1px solid
+                    rgba(126,87,194,0.5);{% else %}background:
+                    rgba(50,50,50,0.3); border: 1px solid
+                    rgba(100,100,100,0.3);{% endif %} border-radius: 12px; }
+          - type: markdown
+            content: >-
+              Notifiche **Telegram + Alexa** ad ogni cambio di stato. DND
+              silenzia entrambi nell'orario impostato o manualmente.
+            card_mod:
+              style: >-
+                ha-card { background: rgba(126,87,194,0.06); border: 1px solid
+                rgba(126,87,194,0.2); border-radius: 12px; font-size: 12px; }
+        card_mod:
+          style: >
+            ha-card { background: linear-gradient(160deg, rgba(126,87,194,0.08)
+            0%, rgba(20,30,50,0.95) 100%);
+
+            border: 1px solid rgba(126,87,194,0.25); border-radius: 24px;
+            padding: 16px; backdrop-filter: blur(10px); }
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: CARICA NOTTURNA
+            subtitle: ""
+            card_mod:
+              style: >
+                ha-card { background: linear-gradient(135deg,
+                rgba(20,20,35,0.95) 0%, rgba(30,40,60,0.90) 50%,
+                rgba(20,30,50,0.95) 100%); border: 1px solid
+                rgba(63,81,181,0.22); border-radius: 24px; padding: 18px 24px
+                14px 24px; position: relative; overflow: hidden; } ha-card
+                .title { margin: 0 !important; font-size: 20px !important;
+                font-weight: 700 !important; line-height: 1.1; display:
+                inline-flex; align-items: center; gap: 10px; background:
+                linear-gradient(90deg, #3f51b5, #7986cb, #3f51b5);
+                background-size: 200% auto; -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent; animation: shine 3s linear
+                infinite; } ha-card .title::before { content: "🌙"; font-size:
+                20px; -webkit-text-fill-color: #7986cb; background: none
+                !important; } ha-card .subtitle { display: none !important; }
+                ha-card::after { content: ""; display: block; width: 100%;
+                height: 3px; margin-top: 8px; border-radius: 999px;
+                background-image: linear-gradient(90deg, rgba(63,81,181,0.22),
+                rgba(121,134,203,0.22)), linear-gradient(90deg, transparent 0%,
+                rgba(63,81,181,0.00) 12%, rgba(63,81,181,0.85) 28%,
+                rgba(121,134,203,0.95) 45%, rgba(255,255,255,1.00) 50%,
+                rgba(121,134,203,0.95) 55%, rgba(63,81,181,0.85) 72%,
+                transparent 100%), radial-gradient(circle,
+                rgba(255,255,255,1.00) 0%, rgba(255,255,255,0.70) 35%,
+                rgba(63,81,181,0.35) 58%, transparent 72%); background-size:
+                100% 100%, 240% 100%, 22px 22px; background-repeat: no-repeat;
+                background-position: 0% 0, 120% 0, -14px 50%; animation:
+                sweep-f3 2.7s ease-in-out infinite alternate; box-shadow: 0 0
+                12px rgba(63,81,181,0.55); pointer-events: none; } @keyframes
+                shine { to { background-position: 200% center; } } @keyframes
+                sweep-f3 { 0% { background-position: 0% 0, 120% 0, -14px 50%;
+                opacity: 0.65; } 50% { opacity: 1; } 100% { background-position:
+                0% 0, -20% 0, calc(100% + 14px) 50%; opacity: 0.65; } }
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: input_boolean.storm_shield_f3_enabled
+                name: Abilitata
+                icon: mdi:weather-night
+                layout: vertical
+                tap_action:
+                  action: toggle
+                card_mod:
+                  style: >
+                    ha-card { {% if
+                    is_state('input_boolean.storm_shield_f3_enabled', 'on')
+                    %}background: rgba(63,81,181,0.15); border: 1px solid
+                    rgba(63,81,181,0.5);{% else %}background:
+                    rgba(50,50,50,0.3); border: 1px solid
+                    rgba(100,100,100,0.3);{% endif %} border-radius: 16px; }
+              - type: custom:mushroom-entity-card
+                entity: input_boolean.storm_shield_f3_charging
+                name: In carica
+                icon: mdi:battery-charging-wireless
+                layout: vertical
+                card_mod:
+                  style: >
+                    ha-card { {% if
+                    is_state('input_boolean.storm_shield_f3_charging', 'on')
+                    %}background: rgba(63,81,181,0.15); border: 1px solid
+                    rgba(63,81,181,0.5); animation: pulse-f3 2s infinite; {%
+                    else %}background: rgba(50,50,50,0.3); border: 1px solid
+                    rgba(100,100,100,0.3);{% endif %} border-radius: 16px; }
+                    @keyframes pulse-f3 { 0%,100% { box-shadow: none; } 50% {
+                    box-shadow: 0 0 15px rgba(63,81,181,0.4); } }
+          - type: custom:mushroom-number-card
+            entity: input_number.storm_shield_f3_soc_sunny
+            name: ☀️ SOC target sole
+            icon: mdi:weather-sunny
+            layout: horizontal
+            card_mod:
+              style: >-
+                ha-card { background: rgba(63,81,181,0.08); border: 1px solid
+                rgba(63,81,181,0.25); border-radius: 16px; }
+          - type: custom:mushroom-number-card
+            entity: input_number.storm_shield_f3_soc_cloudy
+            name: 🌧️ SOC target pioggia
+            icon: mdi:weather-rainy
+            layout: horizontal
+            card_mod:
+              style: >-
+                ha-card { background: rgba(63,81,181,0.08); border: 1px solid
+                rgba(63,81,181,0.25); border-radius: 16px; }
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: input_datetime.storm_shield_f3_start
+                name: 🌙 Inizio
+                icon: ""
+                layout: horizontal
+                card_mod:
+                  style: >
+                    ha-card { background: rgba(63,81,181,0.08); border: 1px
+                    solid rgba(63,81,181,0.25); border-radius: 12px;
+                    --card-primary-font-size: 12px; --card-secondary-font-size:
+                    12px; } mushroom-shape-icon { display: none !important; }
+              - type: custom:mushroom-entity-card
+                entity: input_datetime.storm_shield_f3_end
+                name: ☀️ Fine
+                icon: ""
+                layout: horizontal
+                card_mod:
+                  style: >
+                    ha-card { background: rgba(63,81,181,0.08); border: 1px
+                    solid rgba(63,81,181,0.25); border-radius: 12px;
+                    --card-primary-font-size: 12px; --card-secondary-font-size:
+                    12px; } mushroom-shape-icon { display: none !important; }
+          - type: markdown
+            content: >-
+              Carica notturna in fascia F3 (tariffa ridotta). Target in base
+              al meteo di domani: **☀️ sole → {{
+              states('input_number.storm_shield_f3_soc_sunny') }}%** · **🌧️
+              pioggia → {{ states('input_number.storm_shield_f3_soc_cloudy')
+              }}%**. Skip se EV in carica o batteria sufficiente.
+            card_mod:
+              style: >-
+                ha-card { background: rgba(63,81,181,0.06); border: 1px solid
+                rgba(63,81,181,0.2); border-radius: 12px; font-size: 12px; }
+        card_mod:
+          style: >
+            ha-card { background: linear-gradient(160deg, rgba(63,81,181,0.08)
+            0%, rgba(20,30,50,0.95) 100%);
+
+            border: 1px solid rgba(63,81,181,0.25); border-radius: 24px;
+            padding: 16px; backdrop-filter: blur(10px); }
+        grid_options:
+          columns: full
+  - type: grid
+    cards:
+      - type: custom:mushroom-title-card
+        title: >-
+          {% set lvl = states('sensor.storm_shield_alert_level') | int(0) %} {%
+          if lvl >= 4 %}CRITICITÀ ELEVATA {% elif lvl >= 3 %}CRITICITÀ MODERATA
+          {% elif lvl >= 2 %}CRITICITÀ ORDINARIA {% else %}BOLLETTINO{% endif %}
+        subtitle: ""
+        card_mod:
+          style: >
+            {% set lvl = states('sensor.storm_shield_alert_level') | int(0) %}
+            {% set palette = {0:
+            {'c1':'#00bcd4','c2':'#4dd0e1','rgb':'0,188,212','emoji':'📋'},
+                              1: {'c1':'#4CAF50','c2':'#81C784','rgb':'76,175,80','emoji':'🟢'},
+                              2: {'c1':'#FFD600','c2':'#FFEE58','rgb':'255,214,0','emoji':'🟡'},
+                              3: {'c1':'#FF6D00','c2':'#FFA726','rgb':'255,109,0','emoji':'🟠'},
+                              4: {'c1':'#F44336','c2':'#EF5350','rgb':'244,67,54','emoji':'🔴'}} %}
+            {% set p = palette.get(lvl, palette[0]) %}
+
+            ha-card { background: linear-gradient(135deg, rgba(20,20,35,0.95)
+            0%, rgba(30,40,60,0.90) 50%, rgba(20,30,50,0.95) 100%); border: 1px
+            solid rgba({{ p.rgb }},0.22); border-radius: 24px; padding: 18px
+            24px 14px 24px; position: relative; overflow: hidden; } ha-card
+            .title { margin: 0 !important; font-size: 20px !important;
+            font-weight: 700 !important; line-height: 1.1; display: inline-flex;
+            align-items: center; gap: 10px; background: linear-gradient(90deg,
+            {{ p.c1 }}, {{ p.c2 }}, {{ p.c1 }}); background-size: 200% auto;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite; } ha-card .title::before {
+            content: "{{ p.emoji }}"; font-size: 20px; -webkit-text-fill-color:
+            {{ p.c1 }}; background: none !important; filter: drop-shadow(0 0 5px
+            rgba({{ p.rgb }},0.55)); } ha-card .subtitle { display: none
+            !important; } ha-card::after { content: ""; display: block; width:
+            100%; height: 3px; margin-top: 8px; border-radius: 999px;
+            background-image: linear-gradient(90deg, rgba({{ p.rgb }},0.22),
+            rgba({{ p.rgb }},0.22)), linear-gradient(90deg, transparent 0%,
+            rgba({{ p.rgb }},0.00) 12%, rgba({{ p.rgb }},0.85) 28%, rgba({{
+            p.rgb }},0.95) 45%, rgba(255,255,255,1.00) 50%, rgba({{ p.rgb
+            }},0.95) 55%, rgba({{ p.rgb }},0.85) 72%, transparent 100%),
+            radial-gradient(circle, rgba(255,255,255,1.00) 0%,
+            rgba(255,255,255,0.70) 35%, rgba({{ p.rgb }},0.35) 58%, transparent
+            72%); background-size: 100% 100%, 240% 100%, 22px 22px;
+            background-repeat: no-repeat; background-position: 0% 0, 120% 0,
+            -14px 50%; animation: sweep-sec 2.7s ease-in-out infinite alternate;
+            box-shadow: 0 0 12px rgba({{ p.rgb }},0.55); pointer-events: none; }
+            @keyframes shine { to { background-position: 200% center; } }
+            @keyframes sweep-sec { 0% { background-position: 0% 0, 120% 0, -14px
+            50%; opacity: 0.65; } 50% { opacity: 1; } 100% {
+            background-position: 0% 0, -20% 0, calc(100% + 14px) 50%; opacity:
+            0.65; } }
+      - type: conditional
+        conditions:
+          - condition: numeric_state
+            entity: sensor.storm_shield_alert_level
+            above: 1
+        card:
+          type: horizontal-stack
+          cards:
+            - type: markdown
+              content: >-
+                {% set entity = 'sensor.dpc_alert' %} {% set color = {0:'#888',
+                1:'#4CAF50', 2:'#FFD600', 3:'#FF6D00', 4:'#F44336'} %} {% set
+                label = {0:'—', 1:'VERDE', 2:'GIALLA', 3:'ARANCIONE', 4:'ROSSA'}
+                %} {% set emoji = {'Temporali':'⛈️', 'Idraulico':'💧',
+                'Idrogeologico':'🌊'} %}
+
+                <span style="font-size:9px; letter-spacing:2px; opacity:0.4;
+                text-transform:uppercase;">PROTEZIONE CIVILE</span>
+
+                📍 <span style="font-size:12px; font-weight:700;">{{
+                state_attr(entity, 'zone_name') }}</span>
+
+                <span style="font-size:10px; letter-spacing:1.5px;
+                font-weight:700; opacity:0.4;">▎OGGI</span> {%- set events =
+                state_attr(entity, 'events_today') %} {%- set d =
+                state_attr(entity, 'today') %} {%- if events and events | length
+                > 0 %} {%- for ev in events %}
+
+                <font color="{{ color.get(ev['level'], '#888') }}"><ha-icon
+                icon="{{ 'mdi:numeric-' ~ ev['level'] ~ '-box' }}"
+                style="--mdc-icon-size:18px;"></ha-icon> **{{
+                label.get(ev['level'], '?') }}**</font> {{ emoji.get(ev['risk'],
+                '⚠️') }} <font color="{{ color.get(ev['level'], '#888') }}">{{
+                ev.get('risk', '') }}</font> {%- endfor %} {%- elif d and
+                d['level'] | int(0) >= 1 %}
+
+                <font color="{{ color.get(d['level'], '#888') }}"><ha-icon
+                icon="{{ 'mdi:numeric-' ~ d['level'] | int ~ '-box' }}"
+                style="--mdc-icon-size:18px;"></ha-icon> **{{
+                label.get(d['level'], '?') }}**</font> {%- else %}
+
+                <span style="opacity:0.5;">✅ Nessuna</span> {%- endif %}
+              card_mod:
+                style: |
+                  ha-card {
+                    {% set d = state_attr('sensor.dpc_alert', 'today') %}
+                    {% set lvl = d['level'] | int(0) if d and d['level'] is defined else 0 %}
+                    {% set c = {0:'100,100,130', 1:'76,175,80', 2:'255,214,0', 3:'255,109,0', 4:'244,67,54'} %}
+                    {% set cv = c.get(lvl, '100,100,130') %}
+                    background:
+                      linear-gradient(
+                        160deg,
+                        rgba({{ cv }}, 0.10) 0%,
+                        rgba(15,15,28, 0.97) 50%,
+                        rgba(15,15,28, 0.99) 100%
+                      );
+                    border: 1px solid rgba({{ cv }}, 0.25);
+                    border-left: 3px solid rgba({{ cv }}, 0.60);
+                    border-radius: 20px;
+                    padding: 10px 12px !important;
+                    font-size: 12px;
+                    line-height: 1.5;
+                    position: relative;
+                    overflow: hidden;
+                  }
+                  ha-card::after {
+                    content: "";
+                    position: absolute;
+                    bottom: 0; left: 0; right: 0;
+                    height: 2px;
+                    border-radius: 0 0 20px 20px;
+                    {% set d = state_attr('sensor.dpc_alert', 'today') %}
+                    {% set lvl = d['level'] | int(0) if d and d['level'] is defined else 0 %}
+                    {% set c = {0:'100,100,130', 1:'76,175,80', 2:'255,214,0', 3:'255,109,0', 4:'244,67,54'} %}
+                    {% set cv = c.get(lvl, '100,100,130') %}
+                    background: linear-gradient(90deg, transparent, rgba({{ cv }}, 0.0) 15%, rgba({{ cv }}, 0.8) 50%, rgba({{ cv }}, 0.0) 85%, transparent);
+                    background-size: 200% 100%;
+                    animation: sweep-oggi 2.5s ease-in-out infinite alternate;
+                    pointer-events: none;
+                  }
+                  ha-card p { margin: 1px 0 !important; }
+                  @keyframes sweep-oggi {
+                    0%   { background-position: 120% 0; }
+                    100% { background-position: -20% 0; }
+                  }
+            - type: markdown
+              content: >-
+                {% set entity = 'sensor.dpc_alert' %} {% set color = {0:'#888',
+                1:'#4CAF50', 2:'#FFD600', 3:'#FF6D00', 4:'#F44336'} %} {% set
+                label = {0:'—', 1:'VERDE', 2:'GIALLA', 3:'ARANCIONE', 4:'ROSSA'}
+                %} {% set emoji = {'Temporali':'⛈️', 'Idraulico':'💧',
+                'Idrogeologico':'🌊'} %}
+
+                <span style="font-size:9px; letter-spacing:2px; opacity:0.4;
+                text-transform:uppercase;">PROTEZIONE CIVILE</span>
+
+                📍 <span style="font-size:12px; font-weight:700;">{{
+                state_attr(entity, 'zone_name') }}</span>
+
+                <span style="font-size:10px; letter-spacing:1.5px;
+                font-weight:700; opacity:0.4;">▎DOMANI</span> {%- set events =
+                state_attr(entity, 'events_tomorrow') %} {%- set d =
+                state_attr(entity, 'tomorrow') %} {%- if events and events |
+                length > 0 %} {%- for ev in events %}
+
+                <font color="{{ color.get(ev['level'], '#888') }}"><ha-icon
+                icon="{{ 'mdi:numeric-' ~ ev['level'] ~ '-box' }}"
+                style="--mdc-icon-size:18px;"></ha-icon> **{{
+                label.get(ev['level'], '?') }}**</font> {{ emoji.get(ev['risk'],
+                '⚠️') }} <font color="{{ color.get(ev['level'], '#888') }}">{{
+                ev.get('risk', '') }}</font> {%- endfor %} {%- elif d and
+                d['level'] | int(0) >= 1 %}
+
+                <font color="{{ color.get(d['level'], '#888') }}"><ha-icon
+                icon="{{ 'mdi:numeric-' ~ d['level'] | int ~ '-box' }}"
+                style="--mdc-icon-size:18px;"></ha-icon> **{{
+                label.get(d['level'], '?') }}**</font> {%- else %}
+
+                <span style="opacity:0.5;">✅ Nessuna</span> {%- endif %}
+              card_mod:
+                style: |
+                  ha-card {
+                    {% set d = state_attr('sensor.dpc_alert', 'tomorrow') %}
+                    {% set lvl = d['level'] | int(0) if d and d['level'] is defined else 0 %}
+                    {% set c = {0:'100,100,130', 1:'76,175,80', 2:'255,214,0', 3:'255,109,0', 4:'244,67,54'} %}
+                    {% set cv = c.get(lvl, '100,100,130') %}
+                    background:
+                      linear-gradient(
+                        160deg,
+                        rgba({{ cv }}, 0.10) 0%,
+                        rgba(15,15,28, 0.97) 50%,
+                        rgba(15,15,28, 0.99) 100%
+                      );
+                    border: 1px solid rgba({{ cv }}, 0.25);
+                    border-left: 3px solid rgba({{ cv }}, 0.60);
+                    border-radius: 20px;
+                    padding: 10px 12px !important;
+                    font-size: 12px;
+                    line-height: 1.5;
+                    position: relative;
+                    overflow: hidden;
+                  }
+                  ha-card::after {
+                    content: "";
+                    position: absolute;
+                    bottom: 0; left: 0; right: 0;
+                    height: 2px;
+                    border-radius: 0 0 20px 20px;
+                    {% set d = state_attr('sensor.dpc_alert', 'tomorrow') %}
+                    {% set lvl = d['level'] | int(0) if d and d['level'] is defined else 0 %}
+                    {% set c = {0:'100,100,130', 1:'76,175,80', 2:'255,214,0', 3:'255,109,0', 4:'244,67,54'} %}
+                    {% set cv = c.get(lvl, '100,100,130') %}
+                    background: linear-gradient(90deg, transparent, rgba({{ cv }}, 0.0) 15%, rgba({{ cv }}, 0.8) 50%, rgba({{ cv }}, 0.0) 85%, transparent);
+                    background-size: 200% 100%;
+                    animation: sweep-domani 2.5s ease-in-out infinite alternate;
+                    pointer-events: none;
+                  }
+                  ha-card p { margin: 1px 0 !important; }
+                  @keyframes sweep-domani {
+                    0%   { background-position: 120% 0; }
+                    100% { background-position: -20% 0; }
+                  }
+      - type: custom:config-template-card
+        entities:
+          - sensor.dpc_alert
+        card:
+          type: iframe
+          aspect_ratio: 100%
+          url: >-
+            ${const d = new Date(); const pub =
+            String(states['sensor.dpc_alert'].attributes.publication_date);
+            const dpc_d = new Date(pub); var fase = (dpc_d.getDate() ===
+            d.getDate()) ? 'today' : 'tomorrow';
+            'https://servizio-mappe.protezionecivile.it/#/view/dashboard' +
+            '?x=16.31&y=39.05&zoom=7.0' + '&basemap=OPEN_STREET_MAP' +
+            '&appname=Bollettino+di+Criticita' +
+            '&file=https://raw.githubusercontent.com/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica/master/files/'
+            + states['sensor.dpc_alert'].attributes.id +
+            '.json&hidden=info,minimap,switch&fase=' + fase}
+          card_mod:
+            style: |
+              ha-card {
+                {% set lvl = states('sensor.storm_shield_alert_level') | int(0) %}
+                {% set c = {2:'255,214,0', 3:'255,109,0', 4:'244,67,54'} %}
+                {% set cv = c.get(lvl, '255,109,0') %}
+                border: 1px solid rgba({{ cv }}, 0.25);
+                border-radius: 20px;
+                overflow: hidden;
+                background: rgba(15,15,28, 0.98);
+              }
+              ha-card iframe {
+                border-radius: 18px;
+              }
+    column_span: 1
+cards: []

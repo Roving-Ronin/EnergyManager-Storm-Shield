@@ -1,0 +1,335 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║              🛡️  STORM SHIELD  — v2.1                      ║
+# ║    Package Home Assistant — Helper + Template Sensors       ║
+# ║    Protezione allerta + Carica Notturna + Blackout          ║
+# ╚══════════════════════════════════════════════════════════════╝
+#
+# ⚠️  CUSTOMIZE BEFORE USE:
+#   Search for "YOUR_" and replace with your actual entity IDs:
+#   - YOUR_SUNSET_SENSOR   → your sun setting sensor
+#   - YOUR_FORECAST_SENSOR → your weather forecast sensor
+#   - YOUR_WEATHER_ENTITY  → your weather entity
+#
+#   The template sensors (PV Available, Charge Power) use these.
+#   If you don't have PV/weather sensors, you can delete the
+#   "Storm Shield PV Available" template sensor entirely.
+
+# ═══════════════════════════════════════════════════════════════
+# INPUT BOOLEAN
+# ═══════════════════════════════════════════════════════════════
+
+input_boolean:
+  storm_shield_active:
+    name: "Storm Shield Attivo"
+    icon: mdi:shield-alert
+    initial: false
+
+  storm_shield_manual:
+    name: "Storm Shield Manuale"
+    icon: mdi:shield-lock
+    initial: false
+
+  storm_shield_bypass:
+    name: "Storm Shield Bypass"
+    icon: mdi:shield-off
+    initial: false
+
+  storm_shield_charging:
+    name: "Storm Shield Carica Rete"
+    icon: mdi:battery-charging-high
+    initial: false
+
+  storm_shield_blackout:
+    name: "Storm Shield Blackout"
+    icon: mdi:flash-alert
+    initial: false
+
+  storm_shield_dnd:
+    name: "Non Disturbare"
+    icon: mdi:bell-off
+    initial: false
+
+  storm_shield_notify_alexa:
+    name: "Notifiche Alexa"
+    icon: mdi:speaker-message
+    initial: true
+
+  storm_shield_notify_telegram:
+    name: "Notifiche Telegram"
+    icon: mdi:send
+    initial: true
+
+  storm_shield_test_mode:
+    name: "Storm Shield Test Mode"
+    icon: mdi:test-tube
+    initial: false
+
+  storm_shield_f3_enabled:
+    name: "Carica Notturna"
+    icon: mdi:weather-night
+    initial: true
+
+  storm_shield_f3_charging:
+    name: "Notturna in carica"
+    icon: mdi:battery-charging-wireless
+    initial: false
+
+
+# ═══════════════════════════════════════════════════════════════
+# INPUT NUMBER
+# ═══════════════════════════════════════════════════════════════
+
+input_number:
+  storm_shield_contract_power:
+    name: "Potenza contrattuale"
+    icon: mdi:flash
+    min: 1000
+    max: 10000
+    step: 100
+    initial: 4500
+    unit_of_measurement: "W"
+    mode: box
+
+  storm_shield_safety_margin:
+    name: "Margine sicurezza"
+    icon: mdi:shield-half-full
+    min: 100
+    max: 2000
+    step: 50
+    initial: 500
+    unit_of_measurement: "W"
+    mode: box
+
+  storm_shield_max_charge_power:
+    name: "Potenza max carica"
+    icon: mdi:battery-charging
+    min: 0
+    max: 3000
+    step: 100
+    initial: 3000
+    unit_of_measurement: "W"
+    mode: box
+
+  storm_shield_discharge_restore:
+    name: "Potenza scarica ripristino"
+    icon: mdi:battery-arrow-down
+    min: 0
+    max: 5000
+    step: 500
+    initial: 5000
+    unit_of_measurement: "W"
+    mode: box
+
+  storm_shield_target_soc:
+    name: "SOC target allerta"
+    icon: mdi:battery-high
+    min: 20
+    max: 100
+    step: 5
+    initial: 100
+    unit_of_measurement: "%"
+    mode: slider
+
+  storm_shield_test_level:
+    name: "Livello allerta test"
+    icon: mdi:test-tube
+    min: 0
+    max: 4
+    step: 1
+    initial: 3
+    mode: slider
+
+  storm_shield_f3_soc_sunny:
+    name: "Notturna SOC target sole"
+    icon: mdi:weather-sunny
+    min: 10
+    max: 80
+    step: 5
+    initial: 30
+    unit_of_measurement: "%"
+    mode: slider
+
+  storm_shield_f3_soc_cloudy:
+    name: "Notturna SOC target pioggia"
+    icon: mdi:weather-rainy
+    min: 20
+    max: 100
+    step: 5
+    initial: 60
+    unit_of_measurement: "%"
+    mode: slider
+
+
+# ═══════════════════════════════════════════════════════════════
+# INPUT DATETIME
+# ═══════════════════════════════════════════════════════════════
+
+input_datetime:
+  storm_shield_dnd_start:
+    name: "DND inizio"
+    has_date: false
+    has_time: true
+    initial: "22:00"
+  storm_shield_dnd_end:
+    name: "DND fine"
+    has_date: false
+    has_time: true
+    initial: "07:30"
+
+  storm_shield_f3_start:
+    name: "Carica Notturna inizio"
+    has_date: false
+    has_time: true
+    initial: "23:00"
+  storm_shield_f3_end:
+    name: "Carica Notturna fine"
+    has_date: false
+    has_time: true
+    initial: "05:00"
+
+
+# ═══════════════════════════════════════════════════════════════
+# INPUT TEXT — Log
+# ═══════════════════════════════════════════════════════════════
+
+input_text:
+  storm_shield_last_action:
+    name: "Storm Shield ultima azione"
+    icon: mdi:text-box-outline
+    max: 255
+    initial: "Avvio sistema"
+
+
+# ═══════════════════════════════════════════════════════════════
+# TEMPLATE SENSORS
+# ═══════════════════════════════════════════════════════════════
+
+template:
+  - sensor:
+      - name: "Storm Shield Status"
+        unique_id: storm_shield_status
+        icon: mdi:shield-alert
+        state: >-
+          {% set active = is_state('input_boolean.storm_shield_active', 'on') %}
+          {% set charging = is_state('input_boolean.storm_shield_charging', 'on') %}
+          {% set f3 = is_state('input_boolean.storm_shield_f3_charging', 'on') %}
+          {% set bypass = is_state('input_boolean.storm_shield_bypass', 'on') %}
+          {% set manual = is_state('input_boolean.storm_shield_manual', 'on') %}
+          {% set test = is_state('input_boolean.storm_shield_test_mode', 'on') %}
+          {% set blackout = is_state('input_boolean.storm_shield_blackout', 'on') %}
+          {% if test %}🧪 TEST
+          {% elif bypass %}⏸️ Bypass
+          {% elif blackout %}⚡ BLACKOUT
+          {% elif f3 %}🌙 Carica Notturna
+          {% elif charging %}⚡ Carica rete
+          {% elif active and manual %}🔒 Manuale
+          {% elif active %}🛡️ Attivo
+          {% else %}📡 Monitoraggio{% endif %}
+
+      - name: "Storm Shield Alert Level"
+        unique_id: storm_shield_alert_level
+        icon: mdi:alert
+        state: >-
+          {% set test = is_state('input_boolean.storm_shield_test_mode', 'on') %}
+          {% if test %}{{ states('input_number.storm_shield_test_level') | int(0) }}
+          {% else %}
+            {% set tomorrow = state_attr('sensor.dpc_alert', 'tomorrow') %}
+            {% if tomorrow and tomorrow.level is defined %}{{ tomorrow.level | int(0) }}
+            {% else %}
+              {% set today = state_attr('sensor.dpc_alert', 'today') %}
+              {% if today and today.level is defined %}{{ today.level | int(0) }}
+              {% else %}0{% endif %}
+            {% endif %}
+          {% endif %}
+        attributes:
+          alert_text: >-
+            {% set level = states('sensor.storm_shield_alert_level') | int(0) %}
+            {% if level >= 4 %}🔴 ROSSA{% elif level >= 3 %}🟠 ARANCIONE
+            {% elif level >= 2 %}🟡 GIALLA{% elif level >= 1 %}🟢 VERDE
+            {% else %}✅ Nessuna{% endif %}
+          source: >-
+            {% if is_state('input_boolean.storm_shield_test_mode', 'on') %}test
+            {% else %}
+              {% set tomorrow = state_attr('sensor.dpc_alert', 'tomorrow') %}
+              {% if tomorrow and tomorrow.level is defined %}domani{% else %}oggi{% endif %}
+            {% endif %}
+          info: >-
+            {% if is_state('input_boolean.storm_shield_test_mode', 'on') %}Simulazione
+            {% else %}
+              {% set tomorrow = state_attr('sensor.dpc_alert', 'tomorrow') %}
+              {% if tomorrow and tomorrow.info is defined %}{{ tomorrow.info }}
+              {% else %}
+                {% set today = state_attr('sensor.dpc_alert', 'today') %}
+                {% if today and today.info is defined %}{{ today.info }}{% else %}N/D{% endif %}
+              {% endif %}
+            {% endif %}
+          zone: >-
+            {% set tomorrow = state_attr('sensor.dpc_alert', 'tomorrow') %}
+            {% if tomorrow and tomorrow.zone_name is defined %}{{ tomorrow.zone_name }}
+            {% else %}{{ state_attr('sensor.dpc_alert', 'zone_name') | default('N/D') }}{% endif %}
+
+      - name: "Storm Shield PV Available"
+        unique_id: storm_shield_pv_available
+        icon: mdi:solar-power
+        state: >-
+          {% set sun_set = state_attr('sensor.YOUR_SUNSET_SENSOR', 'today') %}
+          {% set now_ts = now().timestamp() %}
+          {% set good = ['sunny', 'partlycloudy', 'clear-night'] %}
+          {% if sun_set is none %}no
+          {% else %}
+            {% set sunset_ts = as_timestamp(sun_set) %}
+            {% if ((sunset_ts - now_ts) / 3600) <= 1.5 %}no
+            {% else %}
+              {% set hourly = state_attr('sensor.YOUR_FORECAST_SENSOR', 'forecast_hourly') %}
+              {% if hourly is not none and hourly is iterable %}
+                {% set ns = namespace(sun=0, tot=0) %}
+                {% for h in hourly %}
+                  {% set h_ts = as_timestamp(h.datetime) %}
+                  {% if h_ts > now_ts and h_ts < sunset_ts %}
+                    {% set ns.tot = ns.tot + 1 %}
+                    {% if h.condition in good %}{% set ns.sun = ns.sun + 1 %}{% endif %}
+                  {% endif %}
+                {% endfor %}
+                {% if ns.tot > 0 and ns.sun >= (ns.tot * 0.5) %}sì{% else %}no{% endif %}
+              {% else %}{% if states('weather.YOUR_WEATHER_ENTITY') in good %}sì{% else %}no{% endif %}
+              {% endif %}
+            {% endif %}
+          {% endif %}
+        attributes:
+          forecast_sun_hours: >-
+            {% set sun_set = state_attr('sensor.YOUR_SUNSET_SENSOR', 'today') %}
+            {% set now_ts = now().timestamp() %}
+            {% set good = ['sunny', 'partlycloudy', 'clear-night'] %}
+            {% set hourly = state_attr('sensor.YOUR_FORECAST_SENSOR', 'forecast_hourly') %}
+            {% if sun_set is not none and hourly is not none and hourly is iterable %}
+              {% set sunset_ts = as_timestamp(sun_set) %}
+              {% set ns = namespace(c=0) %}
+              {% for h in hourly %}
+                {% if as_timestamp(h.datetime) > now_ts and as_timestamp(h.datetime) < sunset_ts and h.condition in good %}
+                  {% set ns.c = ns.c + 1 %}{% endif %}
+              {% endfor %}{{ ns.c }}
+            {% else %}0{% endif %}
+          forecast_total_hours: >-
+            {% set sun_set = state_attr('sensor.YOUR_SUNSET_SENSOR', 'today') %}
+            {% set now_ts = now().timestamp() %}
+            {% set hourly = state_attr('sensor.YOUR_FORECAST_SENSOR', 'forecast_hourly') %}
+            {% if sun_set is not none and hourly is not none and hourly is iterable %}
+              {% set sunset_ts = as_timestamp(sun_set) %}
+              {% set ns = namespace(c=0) %}
+              {% for h in hourly %}
+                {% if as_timestamp(h.datetime) > now_ts and as_timestamp(h.datetime) < sunset_ts %}
+                  {% set ns.c = ns.c + 1 %}{% endif %}
+              {% endfor %}{{ ns.c }}
+            {% else %}0{% endif %}
+
+      - name: "Storm Shield Charge Power"
+        unique_id: storm_shield_charge_power
+        icon: mdi:flash
+        unit_of_measurement: "W"
+        state: >-
+          {% set grid = states('sensor.power_grid_kwp') | float(0) %}
+          {% set contract = states('input_number.storm_shield_contract_power') | float(4500) %}
+          {% set margin = states('input_number.storm_shield_safety_margin') | float(500) %}
+          {% set max_ch = states('input_number.storm_shield_max_charge_power') | float(3000) %}
+          {% set avail = contract - grid - margin %}
+          {{ ((([0, [avail, max_ch] | min] | max) / 100) | round(0) * 100) | int }}

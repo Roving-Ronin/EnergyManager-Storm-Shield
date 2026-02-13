@@ -1,0 +1,84 @@
+# ═══════════════════════════════════════════════════════════════
+# STORM SHIELD v2.1 — AppDaemon Configuration
+# ═══════════════════════════════════════════════════════════════
+#
+# Copy this file to your AppDaemon apps/ folder and rename to:
+#   storm_shield.yaml  (or include in your apps.yaml)
+#
+# Then fill in YOUR entity IDs from Home Assistant.
+# Lines marked [REQUIRED] must be configured.
+# Lines marked [OPTIONAL] can be omitted (feature will be disabled).
+
+storm_shield:
+  module: storm_shield
+  class: StormShield
+
+  # ─── TELEGRAM NOTIFICATIONS [OPTIONAL] ──────────────────────
+  # Create a bot via @BotFather on Telegram, paste token + chat_id
+  # Omit both to disable Telegram notifications
+  #
+  # telegram_bot_token: "YOUR_BOT_TOKEN"
+  # telegram_chat_id: YOUR_CHAT_ID
+
+  # ─── ALEXA NOTIFICATIONS [OPTIONAL] ─────────────────────────
+  # List your Alexa Media Player notify services (one per device)
+  # Omit to disable Alexa announcements
+  #
+  # alexa_notify_services:
+  #   - "notify/alexa_media_living_room_echo"
+  #   - "notify/alexa_media_bedroom_echo"
+
+  # ─── BATTERY SENSORS [REQUIRED] ─────────────────────────────
+  # Your battery SOC sensor (0-100%)
+  sensor_soc: "sensor.battery_state_of_capacity"
+
+  # Grid power consumption sensor (Watts)
+  sensor_grid: "sensor.power_grid_kwp"
+
+  # ─── BATTERY CONTROL [REQUIRED] ─────────────────────────────
+  # Entity to set max discharge power (number.* or input_number.*)
+  discharge_power_entity: "number.batteries_max_discharge_power"
+
+  # Boolean to enable/disable forced charging
+  charge_switch: "input_boolean.forcible_charge_switch"
+
+  # Slider for target SOC during forced charge
+  target_soc_entity: "input_number.target_soc_slider"
+
+  # Slider for charge power during forced charge
+  charge_power_entity: "input_number.power_slider"
+
+  # ─── DPC WEATHER ALERT SENSOR [OPTIONAL] ────────────────────
+  # Italian Civil Protection alert sensor
+  # Must expose attributes: today.level, tomorrow.level, zone_name
+  # See: https://github.com/caiosweet/Home-Assistant-custom-components-DPC-Alert
+  #
+  sensor_dpc: "sensor.dpc_alert"
+
+  # ─── GRID VOLTAGE — BLACKOUT DETECTION [OPTIONAL] ──────────
+  # Voltage sensor from your energy meter (V)
+  # Omit to disable blackout detection
+  #
+  # sensor_grid_voltage: "sensor.grid_voltage"
+
+  # Blackout thresholds (Volts) — defaults shown
+  # grid_voltage_blackout: 100   # below = blackout → full discharge
+  # grid_voltage_restore: 200    # above = grid OK → maintenance
+
+  # ─── POWER THRESHOLDS [OPTIONAL] ───────────────────────────
+  # Override defaults (Watts)
+  # discharge_maintenance: 500   # W during alert (keeps basic loads)
+  # discharge_blackout: 5000     # W during blackout (full inverter)
+
+  # ─── WEATHER / PV SENSORS [OPTIONAL] ───────────────────────
+  # Used to decide: charge from grid now, or wait for solar?
+  # Omit to always charge from grid immediately.
+  #
+  # sensor_sunset: "sensor.your_city_sun_setting"
+  # sensor_weather: "weather.your_weather_provider"
+  # sensor_forecast: "sensor.your_forecast_daily"
+
+  # ─── EV CHARGER [OPTIONAL] ─────────────────────────────────
+  # If ON, night charging is skipped to avoid grid overload
+  #
+  # ev_charger: "switch.your_ev_charger"

@@ -1,0 +1,14 @@
+# AppDaemon config with secrets
+storm_shield_apps.yaml
+apps.yaml
+
+# Editor
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
