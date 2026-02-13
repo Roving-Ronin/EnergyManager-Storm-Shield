@@ -48,6 +48,19 @@ storm_shield:
   # Slider for charge power during forced charge
   charge_power_entity: "input_number.power_slider"
 
+  # ─── INVERTER SERVICE (direct call) [RECOMMENDED] ──────────
+  # Storm Shield calls your inverter directly — no HA automations needed.
+  # Omit to use HA automations instead (see README).
+  #
+  # Huawei SUN2000 example:
+  # charge_service: "huawei_solar/forcible_charge_soc"
+  # stop_charge_service: "huawei_solar/stop_forcible_charge"
+  # inverter_device_id: "YOUR_INVERTER_DEVICE_ID"
+  #
+  # To find your device_id:
+  #   Settings → Devices → Your inverter → URL contains the device_id
+  #   e.g. /config/devices/device/abcd1234-5678-9abc-def0-123456789abc
+
   # ─── DPC WEATHER ALERT SENSOR [OPTIONAL] ────────────────────
   # Italian Civil Protection alert sensor
   # Must expose attributes: today.level, tomorrow.level, zone_name
