@@ -1,4 +1,4 @@
-# 🛡️ Storm Shield v2.1
+# 🛡️ Huawei Storm Shield v2.1
 
 **Automatic battery protection for Home Assistant + AppDaemon**
 
