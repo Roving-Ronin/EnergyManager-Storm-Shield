@@ -9,8 +9,7 @@ Storm Shield monitors Italian Civil Protection (DPC) weather alerts and automati
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ---
-
-https://github.com/user-attachments/assets/b0308c6a-4fe3-4a40-8a01-0abf67e5f429
+<img width="1331" height="911" alt="Immagine 2026-02-13 120020" src="https://github.com/user-attachments/assets/b82fe22d-5400-401a-9368-deacce67f1c8" />
 
 ## Features
 
@@ -66,7 +65,7 @@ Grid voltage > 200V → RESTORED → Back to 500W maintenance
 - **Alexa Media Player** — for voice announcements
 - **EV charger switch** — to avoid grid overload during night charging
 
-<img width="1331" height="911" alt="Immagine 2026-02-13 120020" src="https://github.com/user-attachments/assets/b82fe22d-5400-401a-9368-deacce67f1c8" />
+https://github.com/user-attachments/assets/b0308c6a-4fe3-4a40-8a01-0abf67e5f429
 
 ## Installation
 
